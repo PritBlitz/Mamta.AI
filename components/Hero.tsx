@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 const Hero = () => {
   return (
@@ -23,13 +24,13 @@ const Hero = () => {
       </div>
 
       {/* Optional Image or Illustration */}
-      <div className="mt-12 md:mt-0 md:ml-10">
-        <img
-          src="/motherhood.png"
-          alt="Pregnant Woman"
-          className="w-72 md:w-96 object-contain drop-shadow-lg"
-        />
-      </div>
+      <Image
+        src={"/motherhood.png"}
+        alt={"Pregnant Woman"}
+        width={384}
+        height={384}
+        className="w-72 md:w-96 object-contain drop-shadow-lg"
+      ></Image>
 
       {/* Background Floating Glow */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
