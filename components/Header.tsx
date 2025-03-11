@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import PregnantGlowIcon from "./MaatriGlow";
 import MaatriGlow from "./MaatriGlow";
 
 const Header = () => {
