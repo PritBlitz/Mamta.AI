@@ -24,7 +24,10 @@ export default function ChatPage() {
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { sender: "ai", text: "This is AI's response. How can I assist you?" },
+        {
+          sender: "ai",
+          text: "My Strong Girl , How is everything going on ? Want to share something with me ? ",
+        },
       ]);
     }, 1000);
   };
@@ -40,7 +43,7 @@ export default function ChatPage() {
         <div className="flex items-center gap-3">
           <Bot className="w-8 h-8 text-pink-600" />
           <h2 className="text-lg font-semibold text-gray-900">
-            Your AI Companion
+            Maatri.AI : Your AI Soulmate
           </h2>
         </div>
         <Button onClick={resetChat} variant="ghost">
@@ -51,7 +54,9 @@ export default function ChatPage() {
       {/* Chat Messages */}
       <ScrollArea className="w-full max-w-2xl h-96 bg-white rounded-lg shadow-md p-4 my-4 overflow-y-auto border border-pink-300">
         {messages.length === 0 ? (
-          <p className="text-gray-500 text-center">Start a conversation...</p>
+          <p className="text-gray-500 text-center">
+            How are you feeling Today ?
+          </p>
         ) : (
           messages.map((msg, index) => (
             <div

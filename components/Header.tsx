@@ -28,7 +28,7 @@ const Header = () => {
           <Link href="/journal" className="hover:text-pink-600">
             Journal
           </Link>
-          <Link href="/ai-assistant" className="hover:text-pink-600">
+          <Link href="/ai_assistant" className="hover:text-pink-600">
             Maatri Assistant
           </Link>
           <Link href="/sos" className="hover:text-pink-600">
