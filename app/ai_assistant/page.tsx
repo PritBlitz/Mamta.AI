@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Send, RefreshCcw, Bot, History, ChevronLeft, ChevronRight, Mic } from "lucide-react";
+import { Send, Bot, History, ChevronLeft, ChevronRight, Mic, MessageCircle } from "lucide-react";
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<
@@ -33,7 +33,7 @@ export default function ChatPage() {
     }, 1000);
   };
 
-  const resetChat = () => {
+  const newChat = () => {
     setPreviousChats((prev) => [
       ...prev,
       { topic: `Chat ${prev.length + 1}`, chats: messages.map((msg) => msg.text) },
@@ -82,6 +82,15 @@ export default function ChatPage() {
             <h3 className="text-lg font-semibold text-gray-700">Previous Chats</h3>
           </div>
           <ScrollArea className="h-96 overflow-y-auto">
+            <Card className="p-2 my-2 bg-blue-100 rounded-md cursor-pointer">
+              💙 Emotional Assistance
+            </Card>
+            <Card className="p-2 my-2 bg-green-100 rounded-md cursor-pointer">
+              🏥 Health Queries
+            </Card>
+            <Card className="p-2 my-2 bg-yellow-100 rounded-md cursor-pointer">
+              💡 General Advice
+            </Card>
             {previousChats.length === 0 ? (
               <p className="text-gray-500 text-center">No previous conversations yet.</p>
             ) : (
@@ -97,13 +106,14 @@ export default function ChatPage() {
 
       <div className="flex flex-col items-center w-4/5">
         {/* Header */}
-        <Card className="w-full bg-pink-300 flex justify-between items-center p-1 rounded-xl shadow-md mb-2">
+        <Card className="w-full bg-pink-300 flex justify-between items-center p-2 rounded-xl shadow-md mb-2">
           <div className="flex items-center gap-3">
             <Bot className="w-8 h-8 text-pink-600" />
             <h2 className="text-xl font-bold text-gray-900">Maatri.AI : Your AI Soulmate</h2>
           </div>
-          <Button onClick={resetChat} variant="ghost">
-            <RefreshCcw className="w-5 h-5" />
+          <Button onClick={newChat} variant="ghost">
+            <MessageCircle className="w-5 h-5" />
+            <span className="ml-2">New Chat</span>
           </Button>
         </Card>
 
