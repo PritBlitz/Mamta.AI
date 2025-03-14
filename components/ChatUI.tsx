@@ -12,16 +12,8 @@ import {
   History,
   ChevronLeft,
   ChevronRight,
-  Mic,
   MessageCircle,
 } from "lucide-react";
-
-// Add a proper type declaration for speech recognition
-declare global {
-  interface Window {
-    webkitSpeechRecognition: new () => SpeechRecognition;
-  }
-}
 
 type Message = {
   sender: "user" | "ai";
@@ -35,7 +27,6 @@ export default function ChatUI() {
     { topic: string; chats: string[] }[]
   >([]);
   const [showSidebar, setShowSidebar] = useState(true);
-  // Removed unused variable isListening
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -83,33 +74,6 @@ export default function ChatUI() {
     if (e.key === "Enter") {
       sendMessage();
     }
-  };
-
-  const startListening = () => {
-    if (!("webkitSpeechRecognition" in window)) {
-      alert("Speech recognition is not supported in your browser.");
-      return;
-    }
-
-    const recognition = new window.webkitSpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = "en-US";
-
-    recognition.onstart = () => {
-      console.log("Voice recognition started...");
-    };
-
-    recognition.onend = () => {
-      console.log("Voice recognition ended.");
-    };
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = event.results[0][0].transcript;
-      setInput(transcript);
-    };
-
-    recognition.start();
   };
 
   return (
@@ -212,9 +176,6 @@ export default function ChatUI() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyPress}
           />
-          <Button onClick={startListening} className="bg-pink-500 text-white">
-            <Mic className="w-5 h-5" />
-          </Button>
           <Button onClick={sendMessage} className="bg-pink-500 text-white">
             <Send className="w-5 h-5" />
           </Button>
