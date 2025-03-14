@@ -1,4 +1,4 @@
-export default function MaatriGlow() {
+export default function MamtaGlow() {
   return (
     <div className="relative w-6 h-6 animate-float">
       <div className="absolute inset-0 rounded-full blur-xl opacity-60 bg-pink-400 animate-pulse-slow" />

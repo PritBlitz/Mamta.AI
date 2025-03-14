@@ -9,7 +9,7 @@ const Hero = () => {
       {/* Text Section */}
       <div className="max-w-xl text-center md:text-left z-10">
         <h1 className="text-4xl md:text-6xl font-bold text-black leading-tight mb-4">
-          Meet <span className="text-pink-600">Maatri.AI</span>
+          Meet <span className="text-pink-600">Mamta.AI</span>
         </h1>
         <p className="text-lg text-gray-700 mb-6">
           Your personalized Period and Pregnancy companion, providing care,
@@ -19,7 +19,7 @@ const Hero = () => {
           href="/ai_assistant"
           className="inline-block bg-pink-600 text-white px-6 py-3 rounded-full text-lg hover:bg-pink-700 transition"
         >
-          Maatri.AI
+          Mamta.AI
         </Link>
       </div>
 

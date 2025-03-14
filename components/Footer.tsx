@@ -14,7 +14,7 @@ const Footer = () => {
         {/* Branding */}
         <div>
           <h2 className="text-2xl font-bold text-pink-600">
-            Maatri<span className="text-black">.AI</span>
+            Mamta<span className="text-black">.AI</span>
           </h2>
           <p className="mt-2 text-sm">
             Supporting women through every stage of motherhood — with care,
@@ -55,11 +55,8 @@ const Footer = () => {
           <p className="text-sm mb-2">Have feedback? Let’s connect.</p>
           <ul className="space-y-1 text-sm">
             <li>
-              <a
-                href="mailto:contact@maatri.ai"
-                className="hover:text-pink-600"
-              >
-                pritblitz.work@maatri.ai
+              <a href="mailto:contact@Mamta.ai" className="hover:text-pink-600">
+                pritblitz.work@Mamta.ai
               </a>
             </li>
             <li>
@@ -86,7 +83,7 @@ const Footer = () => {
       <BackgroundMusic />
 
       <div className="border-t border-gray-300 text-center py-4 text-xs text-gray-500">
-        © {new Date().getFullYear()} Maatri.AI — All rights reserved.
+        © {new Date().getFullYear()} Mamta.AI — All rights reserved.
       </div>
     </footer>
   );

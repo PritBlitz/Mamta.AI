@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import MaatriGlow from "./MaatriGlow";
+import MamtaGlow from "./MamtaGlow";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,14 +15,14 @@ const Header = () => {
     <header className="bg-white shadow-md fixed top-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
-          <MaatriGlow />
+          <MamtaGlow />
           <h1 className="text-2xl font-bold text-pink-600">
-            Maatri<span className="text-black">.AI</span>
+            Mamta<span className="text-black">.AI</span>
           </h1>
         </Link>
 
         {/* Desktop Menu */}
-        <nav className="hidden md:flex space-x-6 text-gray-700 font-medium">
+        <nav className="hidden md:flex space-x-6 text-gray-700 font-medium items-center">
           <Link href="/about" className="hover:text-pink-600">
             About
           </Link>
@@ -29,17 +30,23 @@ const Header = () => {
             Journal
           </Link>
           <Link href="/ai_assistant" className="hover:text-pink-600">
-            Maatri Assistant
+            Mamta Assistant
           </Link>
           <Link href="/sos" className="hover:text-pink-600">
             SOS
           </Link>
-          <Link
-            href="/login"
-            className="hover:bg-pink-600 hover:text-white px-4 py-1 border border-pink-600 rounded-full"
-          >
-            Login
-          </Link>
+
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="hover:bg-pink-600 hover:text-white px-4 py-1 border border-pink-600 rounded-full">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
+
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </nav>
 
         {/* Mobile Menu Toggle */}
@@ -60,19 +67,24 @@ const Header = () => {
             <Link href="/journal" onClick={toggleMenu}>
               Journal
             </Link>
-            <Link href="/ai-assistant" onClick={toggleMenu}>
-              Maatri Assistant
+            <Link href="/ai_assistant" onClick={toggleMenu}>
+              Mamta Assistant
             </Link>
             <Link href="/sos" onClick={toggleMenu}>
               SOS
             </Link>
-            <Link
-              href="/login"
-              className="hover:bg-pink-600 hover:text-white px-4 py-1 border border-pink-600 rounded-full"
-              onClick={toggleMenu}
-            >
-              Login
-            </Link>
+
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="hover:bg-pink-600 hover:text-white px-4 py-1 border border-pink-600 rounded-full">
+                  Sign In
+                </button>
+              </SignInButton>
+            </SignedOut>
+
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </nav>
         </div>
       )}
