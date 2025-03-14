@@ -16,22 +16,26 @@ import {
   MessageCircle,
 } from "lucide-react";
 
+// Add a proper type declaration for speech recognition
 declare global {
   interface Window {
-    webkitSpeechRecognition: any;
+    webkitSpeechRecognition: new () => SpeechRecognition;
   }
 }
 
+type Message = {
+  sender: "user" | "ai";
+  text: string;
+};
+
 export default function ChatUI() {
-  const [messages, setMessages] = useState<
-    { sender: "user" | "ai"; text: string }[]
-  >([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [previousChats, setPreviousChats] = useState<
     { topic: string; chats: string[] }[]
   >([]);
   const [showSidebar, setShowSidebar] = useState(true);
-  const [isListening, setIsListening] = useState(false);
+  // Removed unused variable isListening
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -75,7 +79,7 @@ export default function ChatUI() {
     setMessages([]);
   };
 
-  const handleKeyPress = (e: { key: string }) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       sendMessage();
     }
@@ -86,14 +90,21 @@ export default function ChatUI() {
       alert("Speech recognition is not supported in your browser.");
       return;
     }
+
     const recognition = new window.webkitSpeechRecognition();
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.lang = "en-US";
 
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onresult = (event: { results: { transcript: any }[][] }) => {
+    recognition.onstart = () => {
+      console.log("Voice recognition started...");
+    };
+
+    recognition.onend = () => {
+      console.log("Voice recognition ended.");
+    };
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       const transcript = event.results[0][0].transcript;
       setInput(transcript);
     };
@@ -112,7 +123,7 @@ export default function ChatUI() {
         )}
       </Button>
 
-      {/* Previous Conversations Sidebar */}
+      {/* Sidebar */}
       {showSidebar && (
         <Card className="w-1/5 bg-white p-4 rounded-lg shadow-md my-4 border border-pink-300">
           <div className="flex items-center gap-2 mb-3">
@@ -146,8 +157,8 @@ export default function ChatUI() {
         </Card>
       )}
 
+      {/* Main Chat Section */}
       <div className="flex flex-col items-center w-4/5">
-        {/* Header */}
         <Card className="w-full bg-pink-300 flex justify-between items-center p-2 rounded-xl shadow-md mb-2">
           <div className="flex items-center gap-3">
             <Bot className="w-8 h-8 text-pink-600" />
@@ -161,7 +172,6 @@ export default function ChatUI() {
           </Button>
         </Card>
 
-        {/* Chat Messages */}
         <ScrollArea className="w-full h-[80vh] bg-white rounded-lg shadow-md p-4 my-2 overflow-y-auto border border-pink-300">
           {messages.length === 0 ? (
             <p className="text-gray-500 text-center">
@@ -194,7 +204,6 @@ export default function ChatUI() {
           )}
         </ScrollArea>
 
-        {/* Chat Input */}
         <div className="w-full flex items-center gap-2">
           <Input
             className="flex-1 border border-pink-300"
