@@ -19,7 +19,7 @@ const Hero = () => {
           href="/ai_assistant"
           className="inline-block bg-pink-600 text-white px-6 py-3 rounded-full text-lg hover:bg-pink-700 transition"
         >
-          Mamta.AI
+          Talk to your Soulmate 💗
         </Link>
       </div>
 
