@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import SOSHeading from "@/components/SOSHeading";
+import ContactForm from "@/components/ContactForm";
+import ContactList from "@/components/ContactList";
+import SOSControls from "@/components/SOSControls";
+import WhatsAppLinks from "@/components/WhatsAppLinks";
+import LocationDisplay from "@/components/LocationDisplay";
 
 const SOSPage = () => {
   const [location, setLocation] = useState<{ lat: number; lon: number } | null>(
@@ -13,7 +19,6 @@ const SOSPage = () => {
   const [initialClickDone, setInitialClickDone] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Alert sound (max 3 times)
   useEffect(() => {
     if (sosStarted) {
       const audio = new Audio("/alert.mp3");
@@ -38,7 +43,6 @@ const SOSPage = () => {
     }
   }, [sosStarted]);
 
-  // Auto click all contacts within 3 seconds
   useEffect(() => {
     if (
       sosStarted &&
@@ -57,7 +61,6 @@ const SOSPage = () => {
     }
   }, [sosStarted, location, emergencyContacts, initialClickDone]);
 
-  // Auto re-send every 5 seconds to all contacts
   useEffect(() => {
     if (
       initialClickDone &&
@@ -79,26 +82,13 @@ const SOSPage = () => {
     if ("geolocation" in navigator) {
       setSosStarted(true);
       const id = navigator.geolocation.watchPosition(
-        (pos) => {
-          setLocation({
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-          });
-        },
-        (err) => {
-          alert("Unable to retrieve location: " + err.message);
-        },
-        {
-          enableHighAccuracy: true,
-          maximumAge: 10000,
-          timeout: 5000,
-        }
+        (pos) =>
+          setLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+        (err) => alert("Unable to retrieve location: " + err.message),
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
       );
       setWatchId(id);
-
-      if (navigator.vibrate) {
-        navigator.vibrate([300, 100, 300, 100, 300]);
-      }
+      if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
     } else {
       alert("Geolocation is not supported by your browser.");
     }
@@ -131,86 +121,23 @@ const SOSPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-to-br from-white to-pink-50 text-center">
-      <h1 className="text-4xl font-bold text-pink-700 mb-6">Emergency SOS</h1>
-      <p className="text-lg mb-4">
-        With one tap, share your live location via WhatsApp.
-      </p>
-
-      {/* Emergency Contacts Section */}
-      <div className="w-full max-w-md mb-6">
-        <input
-          type="tel"
-          placeholder="Add emergency contact number"
-          value={emergencyNumber}
-          onChange={(e) => setEmergencyNumber(e.target.value)}
-          className="px-4 py-2 mb-2 border border-pink-400 rounded-md w-full"
-        />
-        <button
-          onClick={handleAddContact}
-          className="bg-pink-500 text-white px-4 py-2 rounded-full w-full hover:bg-pink-600 mb-2"
-        >
-          Add Contact
-        </button>
-
-        {emergencyContacts.length > 0 && (
-          <div className="text-left mt-4">
-            <h2 className="font-semibold text-pink-700 mb-2">
-              Emergency Contacts:
-            </h2>
-            <ul className="list-disc list-inside text-gray-700">
-              {emergencyContacts.map((contact, index) => (
-                <li key={index}>{contact}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      {/* SOS Control Buttons */}
-      <div className="space-x-4 mb-6">
-        <button
-          onClick={() => {
-            if (emergencyContacts.length > 0) {
-              startTracking();
-            } else {
-              alert("Please add at least one emergency contact.");
-            }
-          }}
-          className="bg-pink-600 text-white px-6 py-3 rounded-full hover:bg-pink-700"
-        >
-          Start Sharing Location
-        </button>
-        <button
-          onClick={stopTracking}
-          className="bg-gray-300 text-black px-6 py-3 rounded-full hover:bg-gray-400"
-        >
-          Stop Sharing
-        </button>
-      </div>
-
-      {/* Manual Send Button */}
-      {location && emergencyContacts.length > 0 && (
-        <div className="flex flex-col gap-2">
-          {getWhatsAppLinks().map((link, index) => (
-            <a
-              key={index}
-              href={link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700"
-            >
-              Send Location to {emergencyContacts[index]}
-            </a>
-          ))}
-        </div>
-      )}
-
-      {/* Current Location Display */}
-      {location && (
-        <p className="mt-4 text-sm text-gray-700">
-          Current Location: {location.lat.toFixed(5)}, {location.lon.toFixed(5)}
-        </p>
-      )}
+      <SOSHeading />
+      <ContactForm
+        emergencyNumber={emergencyNumber}
+        setEmergencyNumber={setEmergencyNumber}
+        handleAddContact={handleAddContact}
+      />
+      <ContactList emergencyContacts={emergencyContacts} />
+      <SOSControls
+        emergencyContacts={emergencyContacts}
+        startTracking={startTracking}
+        stopTracking={stopTracking}
+      />
+      <WhatsAppLinks
+        links={getWhatsAppLinks()}
+        emergencyContacts={emergencyContacts}
+      />
+      <LocationDisplay location={location} />
     </div>
   );
 };

@@ -83,7 +83,7 @@ const Footer = () => {
       <BackgroundMusic />
 
       <div className="border-t border-gray-300 text-center py-4 text-xs text-gray-500">
-        © {new Date().getFullYear()} Mamta.AI — All rights reserved.
+        © {new Date().getFullYear()} PritBlitz : Mamta.AI — All rights reserved.
       </div>
     </footer>
   );

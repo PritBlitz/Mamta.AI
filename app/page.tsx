@@ -1,3 +1,4 @@
+import Emergency from "@/components/Emergency";
 import Hero from "@/components/Hero";
 import SOSIntro from "@/components/SosIntro";
 
@@ -6,6 +7,7 @@ export default function Home() {
     <>
       <Hero />
       <SOSIntro />
+      <Emergency />
     </>
   );
 }
