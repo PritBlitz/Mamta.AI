@@ -205,7 +205,7 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
       lineOptions: {
         styles: [{ color: "red", opacity: 0.8, weight: 6 }],
         extendToWaypoints: true,
-        // missingRouteTolerance: 5, // Omitted: Let library use default.
+        missingRouteTolerance: 5, // Omitted: Let library use default.
       },
       createMarker: (i: number, waypoint: L.Routing.Waypoint, n: number) => {
         if (!waypoint || !waypoint.latLng) return false;
