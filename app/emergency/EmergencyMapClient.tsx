@@ -204,7 +204,7 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
       lineOptions: {
         styles: [{ color: "red", opacity: 0.8, weight: 6 }],
         extendToWaypoints: true,
-        missingRouteTolerance: undefined,
+        // missingRouteTolerance: 5, // Omitted: Let library use default. If error persists, uncomment and use a number.
       },
       createMarker: (i: number, waypoint: L.Routing.Waypoint, n: number) => {
         if (!waypoint || !waypoint.latLng) return false;
@@ -260,7 +260,6 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
           const routeBounds = L.latLngBounds(routePath);
           if (routeBounds?.isValid()) {
             setTimeout(() => {
-              // FIX 1: Remove unused variable declaration
               try {
                 map.fitBounds(routeBounds, { padding: [50, 50], maxZoom: 16 });
               } catch {
@@ -316,7 +315,6 @@ const EmergencyMapClient: React.FC = () => {
     const icons: { [key: string]: L.Icon } = {};
     MEDICAL_TYPES.forEach((mt) => {
       if (mt.icon?.startsWith("http")) {
-        // FIX 2: Remove unused variable declaration
         try {
           icons[mt.type] = L.icon({
             iconUrl: mt.icon,
@@ -331,7 +329,6 @@ const EmergencyMapClient: React.FC = () => {
         icons[mt.type] = DefaultIcon;
       }
     });
-    // FIX 3: Remove unused variable declaration
     try {
       icons["user"] = L.icon({
         iconUrl: "https://cdn-icons-png.flaticon.com/512/535/535137.png",
@@ -503,7 +500,6 @@ const EmergencyMapClient: React.FC = () => {
         setRoutingDestination(destLatLng);
         setError(null);
         setLastRouteError(null);
-        // FIX 4: Remove unused variable declaration
       } catch {
         setError("Invalid destination coordinates.");
       }
