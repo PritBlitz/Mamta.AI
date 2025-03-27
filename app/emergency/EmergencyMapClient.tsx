@@ -202,11 +202,9 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
       addWaypoints: false,
       draggableWaypoints: false,
       lineOptions: {
-        // <-- Structrue fixed according to type error
         styles: [{ color: "red", opacity: 0.8, weight: 6 }],
-        // Add the missing properties required by the type definition
-        extendToWaypoints: true, // Default value is often true
-        missingRouteTolerance: undefined, // Or a specific number like 5 if needed
+        extendToWaypoints: true,
+        missingRouteTolerance: undefined,
       },
       createMarker: (i: number, waypoint: L.Routing.Waypoint, n: number) => {
         if (!waypoint || !waypoint.latLng) return false;
@@ -230,31 +228,43 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
       showAlternatives: false,
     })
       .on("routingerror", (e: unknown) => {
-        // ... error handling ...
         console.error("[MapRoutingComponent] Routing Error Event:", e);
         const errorEvent = e as L.ErrorEvent & {
           error?: { message?: string; status?: number };
         };
         const message = errorEvent?.error?.message || "Unknown routing error";
-        let userMessage = `Routing failed: ${message}.`;
-        // ... generate userMessage based on status/message ...
-        onRouteError(userMessage);
+        const status = errorEvent?.error?.status;
+
+        // FIX 1: Use const or appropriate variable declaration
+        let finalUserMessage = `Routing failed: ${message}.`; // Use let as it might be reassigned
+        if (
+          message.toLowerCase().includes("could not find route") ||
+          status === 207
+        ) {
+          finalUserMessage =
+            "Could not find a route between these locations. The destination might be unreachable by car or too far.";
+        } else if (message.toLowerCase().includes("bounds are not valid")) {
+          finalUserMessage =
+            "Routing failed (Invalid Bounds). This might happen if no route exists or due to a server issue.";
+        }
+        onRouteError(
+          `${finalUserMessage} Please try again or check connection.`
+        );
       })
       .on("routesfound", (e: unknown) => {
-        // ... routes found handling ...
         const eventData = e as L.Routing.RoutesFoundEvent;
         const routes = eventData.routes;
         if (routes?.[0]?.coordinates?.length > 0) {
-          // ... fit bounds logic ...
           const routePath = routes[0].coordinates.map((coord) =>
             L.latLng(coord.lat, coord.lng)
           );
           const routeBounds = L.latLngBounds(routePath);
           if (routeBounds?.isValid()) {
             setTimeout(() => {
+              // FIX 2: Prefix unused variable
               try {
                 map.fitBounds(routeBounds, { padding: [50, 50], maxZoom: 16 });
-              } catch (fitBoundsError) {
+              } catch (_fitBoundsError) {
                 map.fitBounds(L.latLngBounds(startLatLng, destinationCoords), {
                   padding: [70, 70],
                   maxZoom: 16,
@@ -307,6 +317,7 @@ const EmergencyMapClient: React.FC = () => {
     const icons: { [key: string]: L.Icon } = {};
     MEDICAL_TYPES.forEach((mt) => {
       if (mt.icon?.startsWith("http")) {
+        // FIX 3: Prefix unused variable
         try {
           icons[mt.type] = L.icon({
             iconUrl: mt.icon,
@@ -314,13 +325,14 @@ const EmergencyMapClient: React.FC = () => {
             iconAnchor: [17, 35],
             popupAnchor: [0, -35],
           });
-        } catch (e) {
+        } catch (_e) {
           icons[mt.type] = DefaultIcon;
         }
       } else {
         icons[mt.type] = DefaultIcon;
       }
     });
+    // FIX 4: Prefix unused variable
     try {
       icons["user"] = L.icon({
         iconUrl: "https://cdn-icons-png.flaticon.com/512/535/535137.png",
@@ -328,14 +340,13 @@ const EmergencyMapClient: React.FC = () => {
         iconAnchor: [19, 38],
         popupAnchor: [0, -38],
       });
-    } catch (e) {
+    } catch (_e) {
       icons["user"] = DefaultIcon;
     }
     return icons;
   }, []);
 
   useEffect(() => {
-    // ... initial location fetching logic ...
     let isMounted = true;
     setInitialLoading(true);
     setError(null);
@@ -362,7 +373,6 @@ const EmergencyMapClient: React.FC = () => {
       (geoError) => {
         if (isMounted) {
           let errorMsg = "Could not get your location.";
-          // ... handle geoError codes ...
           switch (geoError.code) {
             case geoError.PERMISSION_DENIED:
               errorMsg += " Permission denied.";
@@ -389,7 +399,6 @@ const EmergencyMapClient: React.FC = () => {
   }, []);
 
   const fetchMedicalPlaces = useCallback(async () => {
-    // ... fetching logic ...
     if (!location) return;
     setFetchingPlaces(true);
     setError(null);
@@ -419,7 +428,6 @@ const EmergencyMapClient: React.FC = () => {
       });
 
       if (!response.ok) {
-        /* ... handle fetch error ... */
         const errorText = await response
           .text()
           .catch(() => "Failed to read error body");
@@ -446,7 +454,6 @@ const EmergencyMapClient: React.FC = () => {
       const validPlaces =
         data.elements?.filter(
           (place: OverpassElement): place is MedicalPlace => {
-            /* ... type guard ... */
             const hasValidId = place?.id != null;
             const hasValidType = place?.type != null;
             const hasTags = place?.tags != null;
@@ -468,7 +475,6 @@ const EmergencyMapClient: React.FC = () => {
         );
       }
     } catch (err: unknown) {
-      /* ... catch error ... */
       const error = err as Error;
       if (error.name === "AbortError" || error.name === "TimeoutError")
         setError("Fetching locations timed out.");
@@ -479,15 +485,15 @@ const EmergencyMapClient: React.FC = () => {
     }
   }, [location, selectedType]);
 
+  // FIX 5: Add 'location' to dependency array
   useEffect(() => {
     if (location) {
       fetchMedicalPlaces();
     }
-  }, [fetchMedicalPlaces]);
+  }, [fetchMedicalPlaces, location]);
 
   const handleShowRoute = useCallback(
     (coords: L.LatLngExpression) => {
-      // ... show route logic ...
       if (!location) {
         setError("Your location not available.");
         return;
@@ -499,9 +505,11 @@ const EmergencyMapClient: React.FC = () => {
         setRoutingDestination(destLatLng);
         setError(null);
         setLastRouteError(null);
-      } catch (e) {
+        // FIX 6: Prefix unused variable
+      } catch (_e) {
         setError("Invalid destination coordinates.");
       }
+      // Added location dependency as it's used directly
     },
     [location]
   );
@@ -517,7 +525,6 @@ const EmergencyMapClient: React.FC = () => {
   }, []);
 
   if (initialLoading) {
-    /* ... return loading indicator ... */
     return (
       <div className="flex justify-center items-center h-screen p-4">
         <div className="text-xl text-gray-600 animate-pulse">
@@ -535,12 +542,10 @@ const EmergencyMapClient: React.FC = () => {
 
   return (
     <div className="px-4 sm:px-6 py-8 max-w-7xl mx-auto">
-      {/* ... Heading ... */}
       <h1 className="text-2xl sm:text-3xl font-bold mb-5 text-center text-pink-700">
         Find Nearby Medical Help
       </h1>
 
-      {/* ... Error Display ... */}
       {(error || lastRouteError) && (
         <div
           className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 max-w-3xl mx-auto"
@@ -561,7 +566,6 @@ const EmergencyMapClient: React.FC = () => {
         </div>
       )}
 
-      {/* ... Type Buttons ... */}
       <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6">
         {" "}
         {MEDICAL_TYPES.map(({ type, displayName }) => (
@@ -588,7 +592,6 @@ const EmergencyMapClient: React.FC = () => {
         ))}{" "}
       </div>
 
-      {/* ... Clear Route Button ... */}
       {routingDestination && !lastRouteError && (
         <div className="text-center mb-4">
           {" "}
@@ -602,12 +605,10 @@ const EmergencyMapClient: React.FC = () => {
         </div>
       )}
 
-      {/* ... Map Container ... */}
       <div
         className="relative max-w-5xl mx-auto border border-gray-300 rounded-lg shadow-xl overflow-hidden"
         style={{ minHeight: "500px" }}
       >
-        {/* ... Loading Overlay ... */}
         {fetchingPlaces && (
           <div
             className="absolute inset-0 bg-white bg-opacity-75 flex justify-center items-center z-[1000]"
@@ -632,17 +633,14 @@ const EmergencyMapClient: React.FC = () => {
           style={{ width: "100%", height: "70vh", minHeight: "500px" }}
           className="z-0"
         >
-          {/* ... ChangeView ... */}
           {(!routingDestination || lastRouteError) && (
             <ChangeView center={mapCenter} zoom={mapZoom} />
           )}
-          {/* ... TileLayer ... */}
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OSM</a> contributors & <a href="http://project-osrm.org/" target="_blank" rel="noopener noreferrer">OSRM</a>'
             maxZoom={19}
           />
-          {/* ... User Marker ... */}
           {location && !routingDestination && (
             <Marker
               position={[location.lat, location.lng]}
@@ -655,7 +653,6 @@ const EmergencyMapClient: React.FC = () => {
               <Popup>You are here (approx)</Popup>{" "}
             </Marker>
           )}
-          {/* ... Place Markers ... */}
           {places.map((place) => {
             const position: L.LatLngExpression | null =
               place.lat && place.lon
@@ -671,7 +668,7 @@ const EmergencyMapClient: React.FC = () => {
             const getCoordsArray = (
               pos: L.LatLngExpression
             ): [number, number] | null => {
-              /* ... */ try {
+              try {
                 const ll = L.latLng(pos);
                 if (!isNaN(ll.lat) && !isNaN(ll.lng)) return [ll.lat, ll.lng];
               } catch {}
@@ -691,7 +688,6 @@ const EmergencyMapClient: React.FC = () => {
                 keyboard={false}
               >
                 <Popup minWidth={200} maxWidth={280}>
-                  {/* ... Popup Content ... */}
                   <div className="text-sm">
                     <h3 className="font-bold text-base mb-1 break-words">
                       {place.tags.name || "Unnamed Location"}
@@ -699,7 +695,6 @@ const EmergencyMapClient: React.FC = () => {
                     <p className="text-xs text-gray-500 mb-2 italic">
                       {place.type} ID: {place.id}
                     </p>
-                    {/* ... tags display ... */}
                     {place.tags.speciality && (
                       <p>
                         <span className="font-semibold">Specialty:</span>{" "}
@@ -740,7 +735,6 @@ const EmergencyMapClient: React.FC = () => {
                         {place.tags.opening_hours}
                       </p>
                     )}
-                    {/* ... action buttons ... */}
                     <div className="mt-3 space-x-2 flex flex-wrap gap-y-2">
                       {location && !isDestination && (
                         <button
@@ -780,7 +774,6 @@ const EmergencyMapClient: React.FC = () => {
               </Marker>
             );
           })}
-          {/* ... MapRoutingComponent ... */}
           <MapRoutingComponent
             startLocation={location}
             destinationCoords={routingDestination}
@@ -792,7 +785,6 @@ const EmergencyMapClient: React.FC = () => {
         </MapContainer>
       </div>
 
-      {/* ... Footer ... */}
       <p className="text-center text-xs text-gray-500 mt-4">
         {" "}
         Routing provided by{" "}
@@ -806,7 +798,6 @@ const EmergencyMapClient: React.FC = () => {
         </a>
         . Map data © OpenStreetMap contributors. Icons by Flaticon.{" "}
       </p>
-      {/* ... No Results Message ... */}
       {!fetchingPlaces &&
         places.length === 0 &&
         location &&
