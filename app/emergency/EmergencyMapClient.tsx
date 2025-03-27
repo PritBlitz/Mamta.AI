@@ -96,14 +96,37 @@ interface ChangeViewProps {
 const ChangeView: React.FC<ChangeViewProps> = ({ center, zoom }) => {
   const map = useMap();
   useEffect(() => {
-    if (
-      center &&
-      typeof center[0] === "number" &&
-      typeof center[1] === "number"
-    ) {
+    // Check if center is a valid LatLngExpression (array or object)
+    const isValidLatLngArray = (coords: any): coords is [number, number] =>
+      Array.isArray(coords) &&
+      coords.length === 2 &&
+      typeof coords[0] === "number" &&
+      !isNaN(coords[0]) &&
+      typeof coords[1] === "number" &&
+      !isNaN(coords[1]);
+
+    // Check if it's an object with valid lat/lng properties (covers LatLngLiteral and LatLng instance)
+    const isValidLatLngObject = (
+      coords: any
+    ): coords is L.LatLngLiteral | L.LatLng =>
+      typeof coords === "object" &&
+      coords !== null &&
+      typeof (coords as L.LatLngLiteral).lat === "number" &&
+      !isNaN((coords as L.LatLngLiteral).lat) &&
+      typeof (coords as L.LatLngLiteral).lng === "number" &&
+      !isNaN((coords as L.LatLngLiteral).lng);
+
+    if (isValidLatLngArray(center) || isValidLatLngObject(center)) {
+      // Type guards ensure 'center' is now safe to pass to setView
       map.setView(center, zoom);
     } else {
-      console.warn("[ChangeView] Received invalid center coordinates:", center);
+      // Avoid logging if center is just null/undefined during initial renders
+      if (center != null) {
+        console.warn(
+          "[ChangeView] Received invalid or incomplete center coordinates:",
+          center
+        );
+      }
     }
   }, [center, zoom, map]);
   return null;
