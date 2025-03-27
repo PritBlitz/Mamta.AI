@@ -200,11 +200,12 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
       routeWhileDragging: true,
       show: true,
       addWaypoints: false,
+      // @ts-expect-error: draggableWaypoints is a valid option but might be missing in older/incomplete type definitions
       draggableWaypoints: false,
       lineOptions: {
         styles: [{ color: "red", opacity: 0.8, weight: 6 }],
         extendToWaypoints: true,
-        missingRouteTolerance: 5, // Omitted: Let library use default. If error persists, uncomment and use a number.
+        // missingRouteTolerance: 5, // Omitted: Let library use default.
       },
       createMarker: (i: number, waypoint: L.Routing.Waypoint, n: number) => {
         if (!waypoint || !waypoint.latLng) return false;
