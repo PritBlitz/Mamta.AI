@@ -201,7 +201,6 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
       show: true,
       addWaypoints: false,
       // No ts-expect-error needed here anymore
-      draggableWaypoints: false,
       lineOptions: {
         styles: [{ color: "red", opacity: 0.8, weight: 6 }],
         extendToWaypoints: true,
