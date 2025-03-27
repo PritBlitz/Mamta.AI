@@ -92,7 +92,7 @@ const MEDICAL_TYPES = [
 const DEFAULT_LOCATION: Location = { lat: 40.7128, lng: -74.006 };
 const OSRM_SERVICE_URL = "https://router.project-osrm.org/route/v1";
 
-// --- ChangeView Component (Corrected for ESLint) ---
+// --- ChangeView Component ---
 interface ChangeViewProps {
   center: L.LatLngExpression;
   zoom: number;
@@ -235,8 +235,7 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
         const message = errorEvent?.error?.message || "Unknown routing error";
         const status = errorEvent?.error?.status;
 
-        // FIX 1: Use const or appropriate variable declaration
-        let finalUserMessage = `Routing failed: ${message}.`; // Use let as it might be reassigned
+        let finalUserMessage = `Routing failed: ${message}.`;
         if (
           message.toLowerCase().includes("could not find route") ||
           status === 207
@@ -261,10 +260,10 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
           const routeBounds = L.latLngBounds(routePath);
           if (routeBounds?.isValid()) {
             setTimeout(() => {
-              // FIX 2: Prefix unused variable
+              // FIX 1: Remove unused variable declaration
               try {
                 map.fitBounds(routeBounds, { padding: [50, 50], maxZoom: 16 });
-              } catch (_fitBoundsError) {
+              } catch {
                 map.fitBounds(L.latLngBounds(startLatLng, destinationCoords), {
                   padding: [70, 70],
                   maxZoom: 16,
@@ -291,7 +290,7 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
     selectedPlaceIcon,
     userIcon,
     onRouteError,
-    onRouteClear, // Include if used in effect body or cleanup
+    onRouteClear,
   ]);
 
   return null;
@@ -317,7 +316,7 @@ const EmergencyMapClient: React.FC = () => {
     const icons: { [key: string]: L.Icon } = {};
     MEDICAL_TYPES.forEach((mt) => {
       if (mt.icon?.startsWith("http")) {
-        // FIX 3: Prefix unused variable
+        // FIX 2: Remove unused variable declaration
         try {
           icons[mt.type] = L.icon({
             iconUrl: mt.icon,
@@ -325,14 +324,14 @@ const EmergencyMapClient: React.FC = () => {
             iconAnchor: [17, 35],
             popupAnchor: [0, -35],
           });
-        } catch (_e) {
+        } catch {
           icons[mt.type] = DefaultIcon;
         }
       } else {
         icons[mt.type] = DefaultIcon;
       }
     });
-    // FIX 4: Prefix unused variable
+    // FIX 3: Remove unused variable declaration
     try {
       icons["user"] = L.icon({
         iconUrl: "https://cdn-icons-png.flaticon.com/512/535/535137.png",
@@ -340,7 +339,7 @@ const EmergencyMapClient: React.FC = () => {
         iconAnchor: [19, 38],
         popupAnchor: [0, -38],
       });
-    } catch (_e) {
+    } catch {
       icons["user"] = DefaultIcon;
     }
     return icons;
@@ -485,7 +484,6 @@ const EmergencyMapClient: React.FC = () => {
     }
   }, [location, selectedType]);
 
-  // FIX 5: Add 'location' to dependency array
   useEffect(() => {
     if (location) {
       fetchMedicalPlaces();
@@ -505,11 +503,10 @@ const EmergencyMapClient: React.FC = () => {
         setRoutingDestination(destLatLng);
         setError(null);
         setLastRouteError(null);
-        // FIX 6: Prefix unused variable
-      } catch (_e) {
+        // FIX 4: Remove unused variable declaration
+      } catch {
         setError("Invalid destination coordinates.");
       }
-      // Added location dependency as it's used directly
     },
     [location]
   );
