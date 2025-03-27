@@ -200,27 +200,28 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
       routeWhileDragging: true,
       show: true,
       addWaypoints: false,
-      // No ts-expect-error needed here anymore
       lineOptions: {
         styles: [{ color: "red", opacity: 0.8, weight: 6 }],
         extendToWaypoints: true,
-        missingRouteTolerance: 5, // Omitted: Let library use default.
+        missingRouteTolerance: 5,
       },
-      createMarker: (i: number, waypoint: L.Routing.Waypoint, n: number) => {
-        if (!waypoint || !waypoint.latLng) return false;
-        if (i === 0) {
-          return L.marker(waypoint.latLng, {
-            icon: userIcon,
-            draggable: false,
-          }).bindPopup("Your Location (Start)");
-        } else if (i === n - 1) {
-          return L.marker(waypoint.latLng, {
-            icon: selectedPlaceIcon,
-            draggable: false,
-          }).bindPopup("Destination");
-        }
-        return false;
-      },
+      plan: L.Routing.plan([startLatLng, destinationCoords], {
+        createMarker: (i: number, waypoint: L.Routing.Waypoint) => {
+          if (!waypoint || !waypoint.latLng) return false;
+          if (i === 0) {
+            return L.marker(waypoint.latLng, {
+              icon: userIcon,
+              draggable: false,
+            }).bindPopup("Your Location (Start)");
+          } else if (i === 1) {
+            return L.marker(waypoint.latLng, {
+              icon: selectedPlaceIcon,
+              draggable: false,
+            }).bindPopup("Destination");
+          }
+          return false;
+        },
+      }),
       router: L.Routing.osrmv1({
         serviceUrl: OSRM_SERVICE_URL,
         profile: "driving",
@@ -251,7 +252,9 @@ const MapRoutingComponent: React.FC<RoutingComponentProps> = ({
         );
       })
       .on("routesfound", (e: unknown) => {
-        const eventData = e as L.Routing.RoutesFoundEvent;
+        const eventData = e as unknown as {
+          routes: { coordinates: { lat: number; lng: number }[] }[];
+        };
         const routes = eventData.routes;
         if (routes?.[0]?.coordinates?.length > 0) {
           const routePath = routes[0].coordinates.map((coord) =>
